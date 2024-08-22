@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.stereotype.Controller;
@@ -25,7 +26,8 @@ public class v5_SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         // Konfigurimi i HttpSecurity për të menaxhuar autorizimin dhe autentikimin
-        return http.csrf(customizer -> customizer.disable()) // Çaktivizo CSRF (jo e nevojshme për API-të stateless)
+        return http
+                .csrf(customizer -> customizer.disable()) // Çaktivizo CSRF (jo e nevojshme për API-të stateless)
                 .authorizeHttpRequests(request -> request.anyRequest().authenticated()) // Çdo kërkesë duhet të jetë e autentikuar
                 .httpBasic(Customizer.withDefaults()) // Përdor autentikim bazik
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Menaxho sesionet si stateless (pa ruajtje të sesioneve)
@@ -39,7 +41,8 @@ public class v5_SecurityConfig {
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setPasswordEncoder(NoOpPasswordEncoder.getInstance()); // Përdor një kriptim fjalëkalimi pa veprim (jo e sigurt për prodhim)
+//        provider.setPasswordEncoder(NoOpPasswordEncoder.getInstance()); // Përdor një kriptim fjalëkalimi pa veprim (jo e sigurt për prodhim)
+        provider.setPasswordEncoder(new BCryptPasswordEncoder(12));//Perdorem BCryptPasswordEncoder per te dekriptuar passwordin
         provider.setUserDetailsService(userDetailsService); // Lidhet me UserDetailsService për të ngarkuar detajet e përdoruesit
         return provider; // Kthen AuthenticationProvider
     }

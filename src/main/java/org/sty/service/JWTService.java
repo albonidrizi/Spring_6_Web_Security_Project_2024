@@ -1,7 +1,9 @@
 package org.sty.service;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.KeyGenerator;
@@ -12,6 +14,7 @@ import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+
 
 @Service // Kjo tregon që kjo klasë është një shërbim Spring që mund të injektohet në të tjera komponente.
 public class JWTService {
@@ -37,8 +40,25 @@ public class JWTService {
                 .compact(); // Kthen token-in si një string.
     }
 
-    private Key getKey() {
+    private SecretKey getKey() {
         byte[] keyBytes = Base64.getDecoder().decode(secretKey); // Dekodifikon çelësin e fshehtë nga stringu Base64 në bytes.
         return Keys.hmacShaKeyFor(keyBytes); // Kthen një objekt Key për nënshkrimin.
+    }
+
+    public Claims extractUserName(String token) {
+        return Jwts.parser()
+                .verifyWith(getKey())
+                .build().parseSignedClaims(token)
+                .getPayload();
+    }
+
+    public boolean valideteToken(String token, UserDetails userDetails) {
+        final String userName = extractUserName(token).getSubject();
+        return (userName.equals(userDetails.getUsername()) && !isTokenExpired(token));
+    }
+
+
+    private boolean isTokenExpired(String token) {
+        return extractUserName(token).getExpiration().before(new Date());
     }
 }

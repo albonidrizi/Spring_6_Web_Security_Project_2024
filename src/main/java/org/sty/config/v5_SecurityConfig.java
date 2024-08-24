@@ -15,6 +15,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration // Kjo annotacion tregon që kjo klasë është një klasë konfigurimi për Spring.
 @EnableWebSecurity // Aktivizon sigurinë e bazuar në Spring Security për aplikacionin.
@@ -22,6 +23,9 @@ public class v5_SecurityConfig {
 
     @Autowired
     private UserDetailsService userDetailsService; // Shërbimi që menaxhon ngarkimin e detajeve të përdoruesit.
+
+    @Autowired
+    private JwtFilter jwtFilter;
 
     // Ky bean krijon një SecurityFilterChain që konfiguron filtrin e sigurisë për aplikacionin.
     @Bean
@@ -35,6 +39,7 @@ public class v5_SecurityConfig {
                         .anyRequest().authenticated()) // Kërkesat për çdo endpoint tjetër duhet të jenë të autentikuara.
                 .httpBasic(Customizer.withDefaults()) // Përdor autentikimin bazik (për kërkesat që përdorin username dhe fjalëkalim).
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Menaxho sesionet si stateless (pa ruajtje të sesioneve).
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .build(); // Ndërto dhe kthe filtrin e sigurisë.
 
         // Mund të shtosh form login nëse dëshiron t'i ofrosh një formë hyrje:

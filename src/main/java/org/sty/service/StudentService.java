@@ -24,11 +24,6 @@ public class StudentService {
         return repo.save(student);
     }
 
-    public void deleteStudent(int id) {
-        repo.deleteById(id);
-    }
-
-
     public Student updateStudent(int id, Student student) {
         Student existingStudent = repo.findById(id).orElseThrow(() -> new RuntimeException("Student not found with id " + id));
 
@@ -38,5 +33,10 @@ public class StudentService {
 
         return repo.save(existingStudent);
     }
+
+    public void deleteStudent(int id) {
+        repo.deleteById(id);
+    }
+
 
 }

@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
-import java.security.Key;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import java.util.Date;
@@ -19,13 +18,14 @@ import java.util.Map;
 @Service // Kjo tregon që kjo klasë është një shërbim Spring që mund të injektohet në të tjera komponente.
 public class JWTService {
 
-    private String secretKey; // Çelësi i fshehtë për nënshkrimin e JWT-ve.
+    private final String secretKey; // Çelësi i fshehtë për nënshkrimin e JWT-ve.
 
     public JWTService() throws NoSuchAlgorithmException {
         KeyGenerator keyGen = KeyGenerator.getInstance("HmacSHA256"); // Krijon një gjenerator çelësi për algoritmin HMAC-SHA256.
         SecretKey sk = keyGen.generateKey(); // Gjeneron një çelës të fshehtë.
         secretKey = Base64.getEncoder().encodeToString(sk.getEncoded()); // Kodifikon çelësin si një string Base64.
     }
+
 
     public String generateToken(String username) {
         Map<String,Object> claims = new HashMap<>(); // Krijon një hartë për pretendimet (në këtë rast bosh).

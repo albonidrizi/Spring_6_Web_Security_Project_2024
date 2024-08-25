@@ -11,14 +11,20 @@ import org.sty.config.v2_UserRepo;
 @Service // Kjo tregon që kjo klasë është një shërbim Spring që mund të injektohet në të tjera komponente.
 public class UserService {
 
-    @Autowired
     v2_UserRepo repo; // Depoja për ndërveprimin me bazën e të dhënave të përdoruesve.
-
-    @Autowired
-    private JWTService jwtService; // Shërbimi për krijimin e JWT-ve.
-
-    @Autowired
+    private final JWTService jwtService; // Shërbimi për krijimin e JWT-ve.
     AuthenticationManager authManager; // Menaxheri i autentikimit për të verifikuar kredencialet e përdoruesve.
+
+    @Autowired
+    public UserService(v2_UserRepo repo, JWTService jwtService, AuthenticationManager authManager) {
+        this.repo = repo;
+        this.jwtService = jwtService;
+        this.authManager = authManager;
+    }
+
+    public Users findByUsername(String username) {
+        return repo.findByUsername(username); // Rikërko përdoruesin nga baza e të dhënave.
+    }
 
     public Users registerUser(Users user) {
         return repo.save(user); // Ruaj përdoruesin në bazën e të dhënave.

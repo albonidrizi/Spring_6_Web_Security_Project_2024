@@ -10,14 +10,19 @@ import java.util.List;
 @Service
 public class StudentService {
 
-    @Autowired
+
     StudentRepo repo;
+
+    @Autowired
+    public StudentService(StudentRepo repo){
+        this.repo = repo;
+    }
 
     public List<Student> getAllStudents() {
         return repo.findAll();
     }
     public Student getStudentById(int id) {
-        return repo.findById(id).get();
+        return repo.findById(id).orElse(null);
     }
 
     public Student addStudent(Student student) {

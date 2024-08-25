@@ -10,10 +10,11 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+//import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -21,18 +22,21 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity // Aktivizon sigurinë e bazuar në Spring Security për aplikacionin.
 public class v5_SecurityConfig {
 
-    @Autowired
-    private UserDetailsService userDetailsService; // Shërbimi që menaxhon ngarkimin e detajeve të përdoruesit.
+    private final UserDetailsService userDetailsService;
+
+    private final JwtFilter jwtFilter;
 
     @Autowired
-    private JwtFilter jwtFilter;
-
+    public v5_SecurityConfig(UserDetailsService userDetailsService, JwtFilter jwtFilter) {
+        this.userDetailsService = userDetailsService;
+        this.jwtFilter = jwtFilter;
+    }
     // Ky bean krijon një SecurityFilterChain që konfiguron filtrin e sigurisë për aplikacionin.
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         // Konfigurimi i HttpSecurity për të menaxhuar autorizimin dhe autentikimin.
         return http
-                .csrf(customizer -> customizer.disable()) // Çaktivizo CSRF (jo e nevojshme për API-të stateless, si REST).
+                .csrf(AbstractHttpConfigurer::disable) // Çaktivizo CSRF (jo e nevojshme për API-të stateless, si REST).
                 .authorizeHttpRequests(request -> request
                         .requestMatchers("/register", "/login") // Lejo kërkesat në endpoint-et /register dhe /login pa autentikim.
                         .permitAll()

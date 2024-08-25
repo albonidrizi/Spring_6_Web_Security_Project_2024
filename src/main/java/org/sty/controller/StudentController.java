@@ -12,8 +12,13 @@ import java.util.List;
 @RestController
 public class StudentController {
 
+
+    private final StudentService service;
+
     @Autowired
-    StudentService service;
+    public StudentController(StudentService service) {
+        this.service = service;
+    }
 
     @GetMapping("/students")
     public List<Student> getAllStudents() {

@@ -11,10 +11,15 @@ import org.sty.service.UserService;
 @RestController // Kjo tregon që kjo klasë do të trajtojë kërkesat HTTP dhe do të kthejë përgjigje në formatin JSON.
 public class UserController {
 
-    @Autowired
-    public UserService service; // Shërbimi i përdoruesit për logjikën e biznesit të përdoruesve.
+    private final UserService service; // Shërbimi i përdoruesit për logjikën e biznesit të përdoruesve.
 
-    private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(11); // Përdorimi i BCrypt për të koduar fjalëkalimet me një forcë të specifikuar (11).
+    private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(11); // Përdorimi i BCrypt për të koduar fjalëkalimet me një forcë të specifikuar (11).
+
+
+    @Autowired
+    public UserController(UserService service) {
+        this.service = service;
+    }
 
     @PostMapping("/register") // Kjo metodë do të trajtojë kërkesat POST në endpoint-in /register.
     public Users registerUser(@RequestBody Users user) {

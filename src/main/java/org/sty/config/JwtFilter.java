@@ -1,5 +1,6 @@
 package org.sty.config;
 
+import jakarta.annotation.Nullable;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,15 +20,19 @@ import java.io.IOException;
 @Component
 public class JwtFilter extends OncePerRequestFilter {
 
-    @Autowired
-    private JWTService jwtService;
+    private final JWTService jwtService;
+
+    private final ApplicationContext context;
 
     @Autowired
-    ApplicationContext context;
+    public JwtFilter(JWTService jwtService, ApplicationContext context) {
+        this.jwtService = jwtService;
+        this.context = context;
+    }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-                                    FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request,@Nullable HttpServletResponse response,
+                                   @Nullable FilterChain filterChain) throws ServletException, IOException {
 
         String authHeader = request.getHeader("Authorization");
         String token = null;
@@ -48,9 +53,10 @@ public class JwtFilter extends OncePerRequestFilter {
 
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
-            };
+            }
         }
 
+        assert filterChain != null;
         filterChain.doFilter(request, response);
     }
 }

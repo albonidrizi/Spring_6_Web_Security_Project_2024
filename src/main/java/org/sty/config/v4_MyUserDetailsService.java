@@ -10,8 +10,12 @@ import org.springframework.stereotype.Service;
 public class v4_MyUserDetailsService implements UserDetailsService {
 
     // Injektohet repo-ja që përdoret për të marrë të dhënat e përdoruesve nga baza e të dhënave
+    private final v2_UserRepo userRepo;
+
     @Autowired
-    private v2_UserRepo userRepo;
+    public v4_MyUserDetailsService(v2_UserRepo userRepo) {
+        this.userRepo = userRepo;
+    }
 
     // Kjo metodë kërkon përdoruesin në bazën e të dhënave dhe kthen një UserDetails
     @Override
